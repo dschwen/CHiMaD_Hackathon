@@ -1,6 +1,4 @@
-Stork
+CHiMaD Hackathon Benchmark
 =====
 
-"Fork Stork" to create a new MOOSE-based application.
-
-For more information see: [http://mooseframework.org/create-an-app/](http://mooseframework.org/create-an-app/)
+INL phase-field benchmark app for the [CHiMaD Hackathon](https://pages.nist.gov/chimad-phase-field/) problems.
