@@ -5,6 +5,11 @@
 #include "TensorMechanicsApp.h"
 #include "MooseSyntax.h"
 
+// Hackathon I - Ostwald ripening problem
+#include "OstRipACKernel.h"
+#include "OstRipFreeEnergy.h"
+#include "OstRipACKernelAction.h"
+
 template<>
 InputParameters validParams<ChimadHackathonApp>()
 {
@@ -43,11 +48,15 @@ extern "C" void ChimadHackathonApp__registerObjects(Factory & factory) { ChimadH
 void
 ChimadHackathonApp::registerObjects(Factory & factory)
 {
+  registerKernel(OstRipACKernel);
+  registerMaterial(OstRipFreeEnergy);
 }
 
 // External entry point for dynamic syntax association
 extern "C" void ChimadHackathonApp__associateSyntax(Syntax & syntax, ActionFactory & action_factory) { ChimadHackathonApp::associateSyntax(syntax, action_factory); }
 void
-ChimadHackathonApp::associateSyntax(Syntax & /*syntax*/, ActionFactory & /*action_factory*/)
+ChimadHackathonApp::associateSyntax(Syntax & syntax, ActionFactory & action_factory)
 {
+  syntax.registerActionSyntax("OstRipACKernelAction", "Kernels/OstRipACKernel");
+  registerAction(OstRipACKernelAction, "add_kernel");
 }
