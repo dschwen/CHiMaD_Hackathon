@@ -9,6 +9,8 @@
 #include "OstRipACKernel.h"
 #include "OstRipFreeEnergy.h"
 #include "OstRipACKernelAction.h"
+#include "OstRipICAction.h"
+#include "OstRipPseudoRand.h"
 
 template<>
 InputParameters validParams<ChimadHackathonApp>()
@@ -50,6 +52,7 @@ ChimadHackathonApp::registerObjects(Factory & factory)
 {
   registerKernel(OstRipACKernel);
   registerMaterial(OstRipFreeEnergy);
+  registerInitialCondition(OstRipPseudoRand);
 }
 
 // External entry point for dynamic syntax association
@@ -58,5 +61,8 @@ void
 ChimadHackathonApp::associateSyntax(Syntax & syntax, ActionFactory & action_factory)
 {
   syntax.registerActionSyntax("OstRipACKernelAction", "Kernels/OstRipACKernel");
-  registerAction(OstRipACKernelAction, "add_kernel");
+  registerAction(OstRipACKernelAction, "add_kernel");\
+
+  syntax.registerActionSyntax("OstRipICAction", "ICs/OstRipIC");
+  registerAction(OstRipICAction, "add_ic");
 }

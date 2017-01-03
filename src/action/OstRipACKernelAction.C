@@ -1,6 +1,6 @@
 #include "OstRipACKernelAction.h"
 #include "Factory.h"
-#include "Parser.h"
+#include "Conversion.h"
 #include "FEProblem.h"
 
 template<>
@@ -36,11 +36,8 @@ OstRipACKernelAction::act()
 
   for (unsigned int op = 0; op < _op_num; ++op)
   {
-    //Create variable names
-    std::string var_name = _var_name_base;
-    std::stringstream out;
-    out << op;
-    var_name.append(out.str());
+    // Create variable names
+    std::string var_name = _var_name_base + Moose::stringify(op);
 
     std::vector<VariableName> v;
     v.resize(_op_num);
@@ -48,17 +45,13 @@ OstRipACKernelAction::act()
     for (unsigned int j = 0; j < _op_num; ++j)
     {
       if (j != op)
-      {
-        std::stringstream out2;
-        out2 << _var_name_base << j;
-        v[j] = out2.str();
-      }
+        v[j] = _var_name_base + Moose::stringify(j);
       else
         v[j] = _c;
     }
 
     // InputParameters poly_params = _factory.getValidParams("OstRipACKernel");
-    InputParameters poly_params = _factory.getValidParams("ACParsed");
+    InputParameters poly_params = _factory.getValidParams("AllenCahn");
     poly_params.set<NonlinearVariableName>("variable") = var_name;
     poly_params.set<MaterialPropertyName>("f_name") = _f_name;
     poly_params.set<std::vector<VariableName> >("args") = v;
@@ -66,7 +59,7 @@ OstRipACKernelAction::act()
 
     std::string kernel_name = "ACBulk_" + var_name;
 
-    _problem->addKernel("ACParsed", kernel_name, poly_params);
+    _problem->addKernel("AllenCahn", kernel_name, poly_params);
 
     //********************************************
 
