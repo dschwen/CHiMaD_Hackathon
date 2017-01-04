@@ -1,9 +1,3 @@
-/****************************************************************/
-/* MOOSE - Multiphysics Object Oriented Simulation Environment  */
-/*                                                              */
-/*          All contents are licensed under LGPL V2.1           */
-/*             See LICENSE for full restrictions                */
-/****************************************************************/
 #ifndef OSTRIPFREEENERGYRGY_H
 #define OSTRIPFREEENERGYRGY_H
 
@@ -30,18 +24,31 @@ protected:
   virtual Real computeD2F(unsigned int j_var, unsigned int k_var);
   virtual Real computeD3F(unsigned int j_var, unsigned int k_var, unsigned int l_var);
 
+  Real switchingFunction();
+  Real barrierFunction();
+
 private:
-  /// Coupled variable value for the concentration \f$ \c \f$.
+  ///@{ Phase concentrations
+  Real _calpha;
+  Real _cbeta;
+  ///@}
+
+  ///@{ Coupled variable value for the concentration \f$ \c \f$.
   const VariableValue & _c;
   unsigned int _c_var;
-  const MaterialProperty<Real> & _gamma;
-  Real _beta;
-  Real _conc_alpha;
-  Real _epsilon;
+  ///@}
 
+  ///@{ Coupled non-conserved order parameters
+  const unsigned int _nop;
   std::vector<const VariableValue *> _vals;
   std::vector<unsigned int> _vals_var;
-  unsigned int _ncrys;
+  ///@}
+
+  /// barrier coefficient
+  Real _w;
+
+  /// cross-term coefficient
+  Real _alpha;
 };
 
 #endif //MATHFREEENERGY_H
