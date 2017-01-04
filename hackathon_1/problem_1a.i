@@ -1,8 +1,8 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 50
-  ny = 50
+  nx = 20
+  ny = 20
   xmax = 200
   ymax = 200
   uniform_refine = 1
@@ -135,13 +135,14 @@
   scheme = bdf2
   solve_type = NEWTON
 
-  petsc_options_iname = '-pc_type  -sub_ksp_type -sub_pc_type -pc_asm_overlap'
-  petsc_options_value = 'asm       preonly       ilu          1'
+  # use 8 mpi processes
+  petsc_options_iname = '-pc_type  -sub_ksp_type -sub_pc_type '
+  petsc_options_value = 'asm       preonly       ilu'
 
   l_max_its = 30
   l_tol = 1.0e-3
 
-  nl_max_its = 20
+  nl_max_its = 10
   nl_rel_tol = 1e-9
   nl_abs_tol = 1e-8
 
@@ -155,6 +156,13 @@
     growth_factor = 1.2
     optimal_iterations = 8
     iteration_window = 2
+  [../]
+  [./Adaptivity]
+    coarsen_fraction = 0.2
+    refine_fraction = 0.85
+    max_h_level = 2
+    initial_adaptivity = 1
+    interval = 2
   [../]
 []
 
