@@ -91,6 +91,10 @@ OstRipFreeEnergy::computeDF(unsigned int j_var)
   for (unsigned int i = 0; i < _nop; ++i)
     if (j_var == _vals_var[i])
     {
+      const Real h = switchingFunctionD1(i);
+      const Real g = barrierFunctionD1(i);
+
+      return Utility::pow<2>(_c[_qp] - _calpha) * (1.0 - h) + Utility::pow<2>(_c[_qp] - _cbeta) * h + _w * g;
     }
 
   return 0.0;

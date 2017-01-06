@@ -1,8 +1,8 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 80
-  ny = 80
+  nx = ${L}
+  ny = ${L}
   xmax = 200
   ymax = 200
 []
@@ -41,6 +41,10 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./c_diff]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
 []
 
 [Kernels]
@@ -64,6 +68,14 @@
   [../]
 []
 
+[Functions]
+  [./reference]
+    type = SolutionFunction
+    solution = reference
+    from_variable = c
+  [../]
+[]
+
 [AuxKernels]
   [./free_en]
     type = TotalFreeEnergy
@@ -73,13 +85,11 @@
     interfacial_vars = c
     execute_on = 'initial timestep_end'
   [../]
-[]
-
-[BCs]
-  [./Periodic]
-    [./all]
-      auto_direction = 'x y'
-    [../]
+  [./c_diff]
+    type = ElementL2ErrorFunctionAux
+    variable = c_diff
+    function = reference
+    coupled_variable = c
   [../]
 []
 
@@ -120,6 +130,19 @@
     type = RunTime
     time_type = active
   [../]
+  [./err]
+    type = ElementL2Error
+    function = reference
+    variable = c
+  [../]
+[]
+
+[UserObjects]
+  [./reference]
+    type = SolutionUserObject
+    mesh = ../problem_1b_reference.e
+    system_variables = 'c'
+  [../]
 []
 
 [Preconditioning]
@@ -134,8 +157,8 @@
   scheme = bdf2
   solve_type = NEWTON
 
-  petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
-  petsc_options_value = 'lu       superlu_dist'
+  #petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
+  #petsc_options_value = 'lu       superlu_dist'
 
   #petsc_options_iname = '-pc_type  -sub_ksp_type -sub_pc_type -pc_asm_overlap'
   #petsc_options_value = 'asm       preonly       ilu          1'
@@ -143,18 +166,18 @@
   l_max_its = 30
   l_tol = 1.0e-3
 
-  nl_max_its = 20
-  nl_rel_tol = 1e-10
-  nl_abs_tol = 1e-10
+  nl_max_its = 15
+  nl_rel_tol = 1e-8
+  nl_abs_tol = 1e-11
 
   start_time = 0
   end_time = 10000
 
   [./TimeStepper]
     type = IterationAdaptiveDT
-    cutback_factor = .75
     dt = 1.0
-    growth_factor = 1.2
+    cutback_factor = .75
+    growth_factor = 1.25
     optimal_iterations = 8
     iteration_window = 2
   [../]
@@ -166,6 +189,12 @@
     type = Exodus
     sync_times = '1 5 10 20 100 200 500 1000 2000 3000 10000'
     sync_only = true
+  [../]
+  [./err]
+    type = CSV
+    sync_times = '1 5 10 20 100 200 500 1000 2000 3000 10000'
+    sync_only = true
+    show = err
   [../]
 
   interval = 1
