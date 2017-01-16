@@ -26,6 +26,8 @@ protected:
 
   Real switchingFunction();
   Real barrierFunction();
+  Real switchingFunctionD1(unsigned int di);
+  Real barrierFunctionD1(unsigned int di);
 
 private:
   ///@{ Phase concentrations

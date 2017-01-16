@@ -68,6 +68,41 @@ Real OstRipFreeEnergy::barrierFunction()
   return g1 + _alpha * 2.0 * g2;
 }
 
+Real OstRipFreeEnergy::switchingFunctionD1(unsigned int di)
+{
+  Real h = 0.0;
+  // for (unsigned int i = 0; i < _nop; ++i)
+  // {
+  //   const Real n = (*_vals[i])[_qp];
+  //   const Real n2 = n * n;
+  //   const Real n3 = n2 * n;
+  //   h += n3 * (6.0 * n2 - 15.0 * n + 10.0);
+  // }
+
+  return h;
+}
+
+Real OstRipFreeEnergy::barrierFunctionD1(unsigned int di)
+{
+  Real g1 = 0.0;
+  Real g2 = 0.0;
+  // for (unsigned int i = 0; i < _nop; ++i)
+  // {
+  //   const Real ni = (*_vals[i])[_qp];
+  //   g1 += Utility::pow<2>(ni * (1.0 - ni));
+  //
+  //   for (unsigned int j = 0; j < i; ++j)
+  //   {
+  //     const Real nj = (*_vals[j])[_qp];
+  //     g2 += ni * ni * nj * nj;
+  //   }
+  // }
+
+  return g1 + _alpha * 2.0 * g2;
+}
+
+
+
 Real
 OstRipFreeEnergy::computeF()
 {
