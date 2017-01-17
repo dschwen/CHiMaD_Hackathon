@@ -1,0 +1,7 @@
+[Tests]
+  [./spheresurface]
+    type = 'Exodiff'
+    input = 'spheresurface.i'
+    exodiff = 'spheresurface_out.e'
+  [../]
+[]

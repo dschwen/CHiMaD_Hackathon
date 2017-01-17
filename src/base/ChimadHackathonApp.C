@@ -11,6 +11,7 @@
 #include "OstRipACKernelAction.h"
 #include "OstRipICAction.h"
 #include "OstRipPseudoRand.h"
+#include "SphereSurfaceMesh.h"
 
 template<>
 InputParameters validParams<ChimadHackathonApp>()
@@ -53,6 +54,7 @@ ChimadHackathonApp::registerObjects(Factory & factory)
   registerKernel(OstRipACKernel);
   registerMaterial(OstRipFreeEnergy);
   registerInitialCondition(OstRipPseudoRand);
+	registerMesh(SphereSurfaceMesh);
 }
 
 // External entry point for dynamic syntax association
