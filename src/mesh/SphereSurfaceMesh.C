@@ -34,10 +34,12 @@ SphereSurfaceMesh::clone() const
 unsigned int
 SphereSurfaceMesh::midPoint(unsigned int a, unsigned int b)
 {
+  // check if the midpoint has already been added to the mesh
   auto ab = _midpoint.find(std::make_pair(std::min(a, b), std::max(a, b)));
   if (ab != _midpoint.end())
     return ab->second;
 
+  // add midpoint node and store in map for later lookup
   const Point p = *(_umesh.node_ptr(a)) + *(_umesh.node_ptr(b));
   const unsigned int v = _n_points;
   _midpoint.insert(std::make_pair(std::make_pair(std::min(a, b), std::max(a, b)), v));
@@ -48,6 +50,7 @@ SphereSurfaceMesh::midPoint(unsigned int a, unsigned int b)
 void
 SphereSurfaceMesh::subdivide(unsigned int v1, unsigned int v2, unsigned int v3, unsigned int depth)
 {
+  // at the bottom of the recursion we add the most refined triangle faces
   if (depth == 0)
   {
     Elem * elem = _umesh.add_elem(new Tri3);
@@ -69,6 +72,7 @@ SphereSurfaceMesh::subdivide(unsigned int v1, unsigned int v2, unsigned int v3, 
   //  1 --- 31 --- 3
   //
 
+  // subdivide current triangle into four new triangles with consistent winding order
   subdivide(v1, v12, v31, depth - 1);
   subdivide(v2, v23, v12, depth - 1);
   subdivide(v3, v31, v23, depth - 1);
@@ -95,9 +99,10 @@ SphereSurfaceMesh::buildMesh()
   // nodes added by subdivide are shared between neighboring parent triangles
   _umesh.reserve_nodes(nodes / 2 + 12);
 
-  // icosahedron points
-  const double X = 0.525731112119133606;
-  const double Z = 0.850650808352039932;
+  // icosahedron points (using golden ratio rectangle construction)
+  const Real phi = (1.0 + std::sqrt(5.0)) / 2.0;
+  const Real X = std::sqrt(1.0 / (phi*phi + 1.0));
+  const Real Z = X * phi;
   const Point vdata[12] = {
       {-X, 0.0, Z}, {X, 0.0, Z}, {-X, 0.0, -Z}, {X, 0.0, -Z},
       {0.0, Z, X}, {0.0, Z, -X}, {0.0, -Z, X}, {0.0, -Z, -X},
