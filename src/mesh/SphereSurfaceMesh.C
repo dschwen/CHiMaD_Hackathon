@@ -22,7 +22,6 @@ SphereSurfaceMesh::SphereSurfaceMesh(const InputParameters & parameters)
     _n_points(0),
     _umesh(dynamic_cast<UnstructuredMesh &>(getMesh()))
 {
-  mooseAssert(_umesh, "No underlying unstructured mesh found. This is an internal MOOSE/libMesh error.");
 }
 
 MooseMesh &
