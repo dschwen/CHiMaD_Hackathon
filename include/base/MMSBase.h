@@ -15,9 +15,6 @@ public:
   static InputParameters validParams();
 
 protected:
-  virtual Real computeQpResidual() override;
-  virtual Real computeQpJacobian() override;
-
   Real computeC(const Point & p);
   Real computeDfDc(const Point & p);
   Real computeLaplacianC(const Point & p);
