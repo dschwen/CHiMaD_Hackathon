@@ -10,6 +10,6 @@ echo $DIR
 cp ../$INPUT .
 cp -a ../.jitcache .
 
-{ time mpirun -n 12 ../../CHiMaD_Hackathon-opt -i $@ | tee output.out; } 2> output.err
+{ time mpirun -n 4 ../../CHiMaD_Hackathon-opt -i $@ | tee output.out; } 2> output.err
 
 cd ..
