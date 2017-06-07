@@ -3,6 +3,9 @@
 
 // libMesh includes
 #include "libmesh/face_tri3.h"
+#include "libmesh/mesh_modification.h"
+#include "libmesh/mesh_refinement.h"
+#include "libmesh/sphere.h"
 #include "libmesh/unstructured_mesh.h"
 
 template <>
@@ -30,54 +33,6 @@ SphereSurfaceMesh::clone() const
   return *(new SphereSurfaceMesh(*this));
 }
 
-unsigned int
-SphereSurfaceMesh::midPoint(unsigned int a, unsigned int b)
-{
-  // check if the midpoint has already been added to the mesh
-  auto ab = _midpoint.find(std::make_pair(std::min(a, b), std::max(a, b)));
-  if (ab != _midpoint.end())
-    return ab->second;
-
-  // add midpoint node and store in map for later lookup
-  const Point p = *(_umesh.node_ptr(a)) + *(_umesh.node_ptr(b));
-  const unsigned int v = _n_points;
-  _midpoint.insert(std::make_pair(std::make_pair(std::min(a, b), std::max(a, b)), v));
-  _umesh.add_point(p / p.norm() * _radius, _n_points++);
-  return v;
-}
-
-void
-SphereSurfaceMesh::subdivide(unsigned int v1, unsigned int v2, unsigned int v3, unsigned int depth)
-{
-  // at the bottom of the recursion we add the most refined triangle faces
-  if (depth == 0)
-  {
-    Elem * elem = _umesh.add_elem(new Tri3);
-    elem->set_node(0) = _umesh.node_ptr(v1);
-    elem->set_node(1) = _umesh.node_ptr(v2);
-    elem->set_node(2) = _umesh.node_ptr(v3);
-    return;
-  }
-
-  const unsigned int v12 = midPoint(v1, v2);
-  const unsigned int v23 = midPoint(v2, v3);
-  const unsigned int v31 = midPoint(v3, v1);
-
-  //
-  //         2
-  //       /   \
-  //     12 -- 23
-  //    /  \  /   \
-  //  1 --- 31 --- 3
-  //
-
-  // subdivide current triangle into four new triangles with consistent winding order
-  subdivide(v1, v12, v31, depth - 1);
-  subdivide(v2, v23, v12, depth - 1);
-  subdivide(v3, v31, v23, depth - 1);
-  subdivide(v12, v23, v31, depth - 1);
-}
-
 void
 SphereSurfaceMesh::buildMesh()
 {
@@ -86,39 +41,50 @@ SphereSurfaceMesh::buildMesh()
   _umesh.set_mesh_dimension(2);
   _umesh.set_spatial_dimension(3);
 
-  // reserve space for objects in the mesh
-  unsigned int elems = 20;
-  unsigned int nodes = 0;
-  for (unsigned int i = 0; i < _depth; ++i)
-  {
-    nodes += elems * 3;
-    elems *= 4;
-  }
-  _umesh.reserve_elem(elems);
-  // nodes added by subdivide are shared between neighboring parent triangles
-  _umesh.reserve_nodes(nodes / 2 + 12);
+  const Point cent;
+  const Sphere sphere(cent, _radius);
 
   // icosahedron points (using golden ratio rectangle construction)
   const Real phi = (1.0 + std::sqrt(5.0)) / 2.0;
-  const Real X = std::sqrt(1.0 / (phi*phi + 1.0));
+  const Real X = std::sqrt(1.0 / (phi * phi + 1.0));
   const Real Z = X * phi;
   const Point vdata[12] = {
-      {-X, 0.0, Z}, {X, 0.0, Z}, {-X, 0.0, -Z}, {X, 0.0, -Z},
-      {0.0, Z, X}, {0.0, Z, -X}, {0.0, -Z, X}, {0.0, -Z, -X},
-      {Z, X, 0.0}, {-Z, X, 0.0}, {Z, -X, 0.0}, {-Z, -X, 0.0}};
+      {-X, 0.0, Z}, {X, 0.0, Z}, {-X, 0.0, -Z}, {X, 0.0, -Z}, {0.0, Z, X}, {0.0, Z, -X}, {0.0, -Z, X}, {0.0, -Z, -X}, {Z, X, 0.0}, {-Z, X, 0.0}, {Z, -X, 0.0}, {-Z, -X, 0.0}};
   for (unsigned int i = 0; i < 12; ++i)
     _umesh.add_point(vdata[i] * _radius, i);
-  _n_points = 12;
 
   // icosahedron faces
-  unsigned int tindices[20][3] = {
-      {0, 4, 1}, {0, 9, 4}, {9, 5, 4}, {4, 5, 8},
-      {4, 8, 1}, {8, 10, 1}, {8, 3, 10}, {5, 3, 8},
-      {5, 2, 3}, {2, 7, 3}, {7, 10, 3}, {7, 6, 10},
-      {7, 11, 6}, {11, 0, 6}, {0, 1, 6}, {6, 1, 10},
-      {9, 0, 11}, {9, 11, 2}, {9, 2, 5}, {7, 2, 11}};
+  const unsigned int tindices[20][3] = {
+      {0, 4, 1}, {0, 9, 4}, {9, 5, 4}, {4, 5, 8}, {4, 8, 1}, {8, 10, 1}, {8, 3, 10}, {5, 3, 8}, {5, 2, 3}, {2, 7, 3}, {7, 10, 3}, {7, 6, 10}, {7, 11, 6}, {11, 0, 6}, {0, 1, 6}, {6, 1, 10}, {9, 0, 11}, {9, 11, 2}, {9, 2, 5}, {7, 2, 11}};
   for (unsigned int i = 0; i < 20; ++i)
-    subdivide(tindices[i][0], tindices[i][1], tindices[i][2], _depth);
+  {
+    Elem * elem = _umesh.add_elem(new Tri3);
+    elem->set_node(0) = _umesh.node_ptr(tindices[i][0]);
+    elem->set_node(1) = _umesh.node_ptr(tindices[i][1]);
+    elem->set_node(2) = _umesh.node_ptr(tindices[i][2]);
+  }
+
+  // Now we have the beginnings of a sphere.
+  // Add some more elements by doing uniform refinements and
+  // popping nodes to the boundary.
+  MeshRefinement mesh_refinement(_umesh);
+
+  // Loop over the elements, refine, pop nodes to boundary.
+  for (unsigned int r = 0; r < _depth; ++r)
+  {
+    mesh_refinement.uniformly_refine(1);
+
+    auto it = _umesh.active_nodes_begin();
+    const auto end = _umesh.active_nodes_end();
+
+    for (; it != end; ++it)
+    {
+      Node & node = **it;
+      node = sphere.closest_point(node);
+    }
+  }
+
+  MeshTools::Modification::flatten(_umesh);
 
   _umesh.prepare_for_use(/*skip_renumber =*/false);
 }
