@@ -149,6 +149,12 @@
     function = reference
     variable = c
   [../]
+  [./mem]
+    type = MemoryUsage
+    execute_on = linear
+    report_peak_value = true
+    mem_type = physical_memory
+  [../]
 []
 
 [UserObjects]
