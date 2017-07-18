@@ -1,6 +1,7 @@
 [Mesh]
   type = FileMesh
-  file = problem1b.e
+  file = problem1b.msh
+  second_order = true
 []
 
 [GlobalParams]

@@ -1,10 +1,16 @@
+#
+# Cubit input
+#
 create surface rectangle width 30 height 6 zplane
 create surface ellipse major radius 1 minor radius 1.5 zplane
 move Surface 1 x 15 y 3 include_merged
 move Surface 2 x 7 y 2.5 include_merged
 subtract volume 2 from volume 1
+curve 6 interval 30
+curve 6 scheme equal
+mesh curve 6
+surface 3 size auto factor 3
 mesh surface 3
-refine surface 3  numsplit 2 bias 1.0 depth 1 smooth
 sideset 1 curve 1
 sideset 1 name 'top'
 sideset 2 curve 2
@@ -18,4 +24,4 @@ sideset 6 name 'obstruction'
 block 1 surface 3
 block 1 element type QUAD9
 set large exodus file on
-export Genesis "/Users/schwd/problem1b.e" overwrite
+export Genesis "problem1b.cubit.e" overwrite
