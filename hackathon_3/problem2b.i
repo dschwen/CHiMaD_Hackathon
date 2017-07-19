@@ -2,7 +2,7 @@
 #
 
 [Mesh]
-   file = problem2b.msh
+   file = mesh/problem2b.msh
 []
 
 [Variables]
