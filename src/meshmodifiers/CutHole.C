@@ -15,7 +15,6 @@ validParams<CutHole>()
   params.addRequiredParam<Point>("center", "center of the hole");
   params.addRequiredParam<RealVectorValue>("r", "semimajor axis of the hole");
   params.addParam<unsigned int>("refine", 0, "Refinement steps for elements cut be the surface of the hole");
-  params.addParam<BoundaryName>("boundary", "Boundary name to assign to the hole surface");
   return params;
 }
 

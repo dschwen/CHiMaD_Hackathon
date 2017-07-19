@@ -1,10 +1,12 @@
 [Mesh]
   type = FileMesh
-  file = problem1b.cubit.e
+  file = mesh/problem1b.cubit.e
 []
 
 [GlobalParams]
   gravity = '0 -0.001 0'
+  convective_term = false
+  integrate_p_by_parts = false
 []
 
 [MeshModifiers]
@@ -44,7 +46,6 @@
     v = vel_y
     p = p
     component = 0
-    convective_term = false
   [../]
   [./y_momentum_space]
     type = INSMomentumLaplaceForm
@@ -53,7 +54,6 @@
     v = vel_y
     p = p
     component = 1
-    convective_term = false
   [../]
 []
 
@@ -61,13 +61,13 @@
   [./x_no_slip]
     type = DirichletBC
     variable = vel_x
-    boundary = 'top bottom'
+    boundary = 'obstruction top bottom'
     value = 0.0
   [../]
   [./y_no_slip]
     type = DirichletBC
     variable = vel_y
-    boundary = 'left top bottom'
+    boundary = 'obstruction left top bottom'
     value = 0.0
   [../]
   [./x_inlet]
@@ -103,6 +103,33 @@
   [../]
 []
 
+[VectorPostprocessors]
+  [./x7a]
+    type = LineValueSampler
+    variable = 'p vel_x vel_y'
+    start_point = '7 0 0'
+    end_point = '7 1 0'
+    num_points = '20'
+    sort_by = y
+  [../]
+  [./x7b]
+    type = LineValueSampler
+    variable = 'p vel_x vel_y'
+    start_point = '7 4 0'
+    end_point = '7 6 0'
+    num_points = '40'
+    sort_by = y
+  [../]
+  [./y5]
+    type = LineValueSampler
+    variable = 'p vel_x vel_y'
+    start_point = '0 5 0'
+    end_point = '30 5 0'
+    num_points = '500'
+    sort_by = x
+  [../]
+[]
+
 [Executioner]
   type = Steady
   petsc_options_iname = '-ksp_gmres_restart -pc_type -sub_pc_type -sub_pc_factor_levels'
@@ -116,6 +143,8 @@
 
 [Outputs]
   exodus = true
+  csv = true
+  execute_on = TIMESTEP_END
 []
 
 [Functions]

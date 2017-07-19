@@ -12,6 +12,8 @@
 
 [GlobalParams]
   gravity = '0 -0.001 0'
+  convective_term = false
+  integrate_p_by_parts = false
 []
 
 [MeshModifiers]
@@ -51,7 +53,6 @@
     v = vel_y
     p = p
     component = 0
-    convective_term = false
   [../]
   [./y_momentum_space]
     type = INSMomentumLaplaceForm
@@ -60,7 +61,6 @@
     v = vel_y
     p = p
     component = 1
-    convective_term = false
   [../]
 []
 
@@ -97,7 +97,7 @@
 [Materials]
   [./const]
     type = GenericConstantMaterial
-    prop_names = 'rho mu'
+    prop_names  = 'rho mu'
     prop_values = '100  1'
   [../]
 []
@@ -107,6 +107,25 @@
     type = SMP
     full = true
     solve_type = NEWTON
+  [../]
+[]
+
+[VectorPostprocessors]
+  [./x7]
+    type = LineValueSampler
+    variable = 'p vel_x vel_y'
+    start_point = '7 0 0'
+    end_point = '7 6 0'
+    num_points = '100'
+    sort_by = y
+  [../]
+  [./y5]
+    type = LineValueSampler
+    variable = 'p vel_x vel_y'
+    start_point = '0 5 0'
+    end_point = '30 5 0'
+    num_points = '500'
+    sort_by = x
   [../]
 []
 
@@ -123,6 +142,8 @@
 
 [Outputs]
   exodus = true
+  csv = true
+  execute_on = TIMESTEP_END
 []
 
 [Functions]
