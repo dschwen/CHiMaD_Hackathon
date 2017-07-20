@@ -28,6 +28,11 @@
     r = '1 1.5 1'
     new_boundary = obstruction
   [../]
+  [./improve]
+    type = ImproveElements
+    iterations = 4
+    depends_on = hole
+  [../]
 []
 
 [Variables]
@@ -121,14 +126,14 @@
     type = LineValueSampler
     variable = 'p vel_x vel_y'
     start_point = '7 0 0'
-    end_point = '7 1 0'
+    end_point = '7 0.999 0'
     num_points = '20'
     sort_by = y
   [../]
   [./x7b]
     type = LineValueSampler
     variable = 'p vel_x vel_y'
-    start_point = '7 4 0'
+    start_point = '7 4.001 0'
     end_point = '7 6 0'
     num_points = '40'
     sort_by = y
@@ -149,9 +154,9 @@
   petsc_options_value = '300                bjacobi  ilu          4'
   line_search = none
   nl_rel_tol = 1e-12
-  nl_max_its = 6
+  nl_max_its = 15
   l_tol = 1e-12
-  l_max_its = 300
+  l_max_its = 1000
 []
 
 [Outputs]

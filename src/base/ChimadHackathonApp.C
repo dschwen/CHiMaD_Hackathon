@@ -6,6 +6,7 @@
 
 // Hackathon I - Ostwald ripening problem
 #include "CutHole.h"
+#include "ImproveElements.h"
 #include "OstRipACKernel.h"
 #include "OstRipACKernelAction.h"
 #include "OstRipFreeEnergy.h"
@@ -59,6 +60,7 @@ void
 ChimadHackathonApp::registerObjects(Factory & factory)
 {
   registerMeshModifier(CutHole);
+  registerMeshModifier(ImproveElements);
   registerKernel(OstRipACKernel);
   registerMaterial(OstRipFreeEnergy);
   registerInitialCondition(OstRipPseudoRand);

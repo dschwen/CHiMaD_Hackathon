@@ -85,7 +85,10 @@
 [UserObjects]
   [./reference]
     type = SolutionUserObject
-    mesh = problem1b_reference.e
     system_variables = 'p vel_x vel_y'
   [../]
+[]
+
+[Debug]
+  show_var_residual_norms = true
 []

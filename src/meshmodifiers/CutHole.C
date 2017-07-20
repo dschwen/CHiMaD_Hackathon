@@ -41,29 +41,6 @@ CutHole::modify()
     mooseError("_mesh_ptr must be initialized before calling CutHole::modify()");
   MeshBase & mesh = _mesh_ptr->getMesh();
 
-  /*
-  // refining the cut unfortunately does not work, because it leaves
-  // unconstrained hanging nodes
-
-  // Elements that will be refined
-  MeshRefinement mesh_refinement(mesh);
-
-  // First let's figure out which elements need to be refined
-  for (unsigned int step = 0; step < _refinement_steps; ++step)
-  {
-    const MeshBase::const_element_iterator end = mesh.elements_end();
-    for (MeshBase::const_element_iterator elem_it = mesh.elements_begin(); elem_it != end; ++elem_it)
-    {
-      Elem * elem = *elem_it;
-      const unsigned int n = nodesContained(elem);
-      if (n > 0 && n < elem->n_nodes())
-        elem->set_refinement_flag(Elem::REFINE);
-    }
-    mesh_refinement.refine_and_coarsen_elements();
-  }
-  MeshTools::Modification::flatten(mesh);
-*/
-
   // delete interior
   ElementDeleterBase::modify();
 
@@ -119,7 +96,11 @@ CutHole::snapNodes(Elem * elem)
     {
       auto & node = elem->node_ref(i);
       const Point o = node - _center;
-      const Real f = 1.0 / std::sqrt(ellipsoidDistance(o));
-      node = o * f + _center;
+      const Real d2 = ellipsoidDistance(o);
+      if (d2 > libMesh::TOLERANCE)
+      {
+        const Real f = 1.0 / std::sqrt(d2);
+        node = o * f + _center;
+      }
     }
 }
