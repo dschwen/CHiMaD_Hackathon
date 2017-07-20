@@ -150,7 +150,7 @@
   line_search = none
   nl_rel_tol = 1e-12
   nl_max_its = 6
-  l_tol = 1e-6
+  l_tol = 1e-12
   l_max_its = 300
 []
 

@@ -1,6 +1,7 @@
 //
 // Gmsh input
 //
+Mesh.ElementOrder = 2;
 
 periphery_size = 1; // element size elsewhere in the domain
 obstruction_size = 0.3; // element size around the obstruction
