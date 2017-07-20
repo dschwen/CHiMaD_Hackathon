@@ -30,7 +30,7 @@
   [../]
   [./improve]
     type = ImproveElements
-    iterations = 4
+    iterations = 10
     depends_on = hole
   [../]
 []

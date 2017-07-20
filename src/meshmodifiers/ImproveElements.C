@@ -32,6 +32,18 @@ ImproveElements::modify()
   // get the libMesh mesh
   MeshBase & mesh = _mesh_ptr->getMesh();
 
+  {
+    const MeshBase::node_iterator end = mesh.active_nodes_end();
+    for (MeshBase::node_iterator node_it = mesh.active_nodes_begin(); node_it != end; ++node_it)
+    {
+      Node & node = **node_it;
+      const Point o = node - Point(7, 2.5, 0);
+      const Real R = o(0) * o(0) + o(1) * o(1) / (1.5 * 1.5);
+      if (R < 1.0 - libMesh::TOLERANCE)
+        mooseError("WTF1 ", R - 1.0);
+    }
+  }
+
   // connected nodes set
   std::set<const Node *> connected;
 
@@ -103,5 +115,16 @@ ImproveElements::modify()
         node = _relaxation_factor * (average * (1.0 / Real(nc)) - node) + node;
       }
     }
+  }
+
+  // fix hole
+  const MeshBase::node_iterator end = mesh.active_nodes_end();
+  for (MeshBase::node_iterator node_it = mesh.active_nodes_begin(); node_it != end; ++node_it)
+  {
+    Node & node = **node_it;
+    const Point o = node - Point(7, 2.5, 0);
+    const Real R = o(0) * o(0) + o(1) * o(1) / (1.5 * 1.5);
+    if (R < 1.0 - libMesh::TOLERANCE)
+      mooseError("WTF2");
   }
 }

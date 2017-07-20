@@ -45,13 +45,22 @@ CutHole::modify()
   ElementDeleterBase::modify();
 
   // snap nodes to ellipsoid
-  const MeshBase::element_iterator end = mesh.elements_end();
-  for (MeshBase::element_iterator elem_it = mesh.elements_begin(); elem_it != end; ++elem_it)
+  const MeshBase::node_iterator end = mesh.active_nodes_end();
+  for (MeshBase::node_iterator node_it = mesh.active_nodes_begin(); node_it != end; ++node_it)
   {
-    Elem * elem = *elem_it;
-    const unsigned int n = nodesContained(elem);
-    if (n > 0 && n < elem->n_nodes())
-      snapNodes(elem);
+    Node & node = **node_it;
+    const Point o = node - _center;
+    const Real R = ellipsoidDistance(o);
+    if (R < 1.0 && R > libMesh::TOLERANCE)
+    {
+      const Real f = 1.0 / std::sqrt(R - libMesh::TOLERANCE);
+      node = o * f + _center;
+
+      const Point o2 = node - Point(7, 2.5, 0);
+      const Real R = o2(0) * o2(0) + o2(1) * o2(1) / (1.5 * 1.5);
+      if (R < 1.0 - libMesh::TOLERANCE)
+        std::cout << (R - 1.0) << '\n';
+    }
   }
 }
 
@@ -85,22 +94,4 @@ CutHole::nodesContained(const Elem * elem)
       contained++;
 
   return contained;
-}
-
-void
-CutHole::snapNodes(Elem * elem)
-{
-  const unsigned int n = elem->n_nodes();
-  for (unsigned int i = 0; i < n; ++i)
-    if (nodeContained(elem->node_ptr(i)))
-    {
-      auto & node = elem->node_ref(i);
-      const Point o = node - _center;
-      const Real d2 = ellipsoidDistance(o);
-      if (d2 > libMesh::TOLERANCE)
-      {
-        const Real f = 1.0 / std::sqrt(d2);
-        node = o * f + _center;
-      }
-    }
 }
