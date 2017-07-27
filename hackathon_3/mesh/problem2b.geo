@@ -2,7 +2,7 @@
 // Gmsh input
 //
 
-lc = 3; // element size in the domain
+lc = 1; // element size in the domain
 
 // Rectangular section
 Point(1) = {0,0,0,lc};
