@@ -65,13 +65,19 @@
     variable = w
     v = c
   [../]
-  [./c_res]
+  [./c_res] #Note that only the chemical and gradient terms are included here
     type = SplitCHParsed
     variable = c
-    f_name = f_bulk
+    f_name = f_chem
     kappa_name = kappa_c
     w = w
     args = 'phi'
+  [../]
+  [./c_res_phi] #Here the electrostatic contribution is added to the Cahn-Hilliard equation
+    type = MatReaction
+    variable = c
+    v = phi
+    mob_name = minusk
   [../]
   [./w_res]
     type = SplitCHWRes
@@ -106,13 +112,19 @@
   [./mat]
     type = GenericConstantMaterial
     prop_names  = 'M   kappa_c  rho c_a c_b k     eps'
-    prop_values = '5.0 2.0      5   0.3 0.7 0.09  9'
+    prop_values = '5.0 2.0      5   0.3 0.7 0.09  90'
   [../]
   [./kovereps]
     type = DerivativeParsedMaterial
     f_name = kovereps
     material_property_names = 'k eps'
     function = 'k/eps'
+  [../]
+  [./minusk]
+    type = DerivativeParsedMaterial
+    f_name = minusk
+    material_property_names = 'k'
+    function = '-k'
   [../]
   [./free_energy_chem]
     type = DerivativeParsedMaterial
@@ -156,7 +168,7 @@
     end_point = '99.9 50 0'
     variable = c
     sort_by = x
-    num_points = 81
+    num_points = 161
   [../]
 []
 
@@ -164,6 +176,13 @@
   [./total_free_energy]
     type = ElementIntegralVariablePostprocessor
     variable = local_energy
+  [../]
+  [./total_solute]
+    type = ElementIntegralVariablePostprocessor
+    variable = c
+  [../]
+  [./dt]
+    type = TimestepSize
   [../]
 []
 
@@ -183,17 +202,17 @@
 
   [./TimeStepper]
     type = IterationAdaptiveDT
-    dt = 2.0
-    optimal_iterations = 6
+    dt = 1.0
+    optimal_iterations = 8
     iteration_window = 2
   [../]
 
-  end_time = 1e5
+  end_time = 400
 []
 
 [Outputs]
   exodus = true
   csv = true
   print_perf_log = true
-  sync_times = '5 10 20 50 100 200 400 1000'
+  sync_times = '5 10 20 50 100 200 400'
 []
