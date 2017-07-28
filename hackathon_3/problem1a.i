@@ -39,6 +39,21 @@
   [../]
 []
 
+[AuxVariables]
+  [./p_diff]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./vel_x_diff]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./vel_y_diff]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+[]
+
 [Kernels]
   [./mass]
     type = INSMass
@@ -61,6 +76,27 @@
     v = vel_y
     p = p
     component = 1
+  [../]
+[]
+
+[AuxKernels]
+  [./p_diff]
+    type = ElementL2ErrorFunctionAux
+    variable = p_diff
+    function = p_reference
+    coupled_variable = p
+  [../]
+  [./vel_x_diff]
+    type = ElementL2ErrorFunctionAux
+    variable = vel_x_diff
+    function = inlet_func
+    coupled_variable = vel_x
+  [../]
+  [./vel_y_diff]
+    type = ElementL2ErrorFunctionAux
+    variable = vel_y_diff
+    function = vel_y_reference
+    coupled_variable = vel_y
   [../]
 []
 
@@ -129,6 +165,32 @@
   [../]
 []
 
+[Postprocessors]
+  [./nodes]
+    type = NumNodes
+  [../]
+  [./active_time]
+    type = PerformanceData
+    event = ACTIVE
+  [../]
+  [./p_err]
+    type = ElementL2Error
+    function = p_reference
+    variable = p
+  [../]
+  [./vel_x_err]
+    type = ElementL2Error
+    function = inlet_func
+    variable = vel_x
+  [../]
+  [./vel_y_err]
+    type = ElementL2Error
+    function = vel_y_reference
+    variable = vel_y
+  [../]
+[]
+
+
 [Executioner]
   type = Steady
   petsc_options_iname = '-ksp_gmres_restart -pc_type -sub_pc_type -sub_pc_factor_levels'
@@ -147,7 +209,16 @@
 []
 
 [Functions]
-  [./inlet_func]
+  [./p_reference]
+    type = ParsedFunction
+    value = '((1.0-x/30.0)*0.06+(1-y/6.0)*0.6)'
+  [../]
+  [./vel_y_reference]
+    type = ParsedFunction
+    value = '0'
+  [../]
+
+  [./inlet_func] # also vel_x_reference
     type = ParsedFunction
     value = '-0.001 * (y-3)^2 + 0.009'
   [../]
