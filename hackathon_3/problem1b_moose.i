@@ -31,6 +31,7 @@
   [./improve]
     type = ImproveElements
     iterations = 10
+    relaxation_factor = 1.1
     depends_on = hole
   [../]
 []

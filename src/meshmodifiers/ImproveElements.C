@@ -68,7 +68,7 @@ ImproveElements::modify()
       // find adjacent elements
       auto adjacent_elem_it = node_to_elem.find(node_id);
       if (adjacent_elem_it == node_to_elem.end())
-        mooseError("No adjacent element found for node ", node_id);
+        mooseWarning("No adjacent element found for node ", node_id);
 
       // clear connected nodes
       connected.clear();
@@ -125,6 +125,6 @@ ImproveElements::modify()
     const Point o = node - Point(7, 2.5, 0);
     const Real R = o(0) * o(0) + o(1) * o(1) / (1.5 * 1.5);
     if (R < 1.0 - libMesh::TOLERANCE)
-      mooseError("WTF2");
+      mooseWarning("WTF2 ", R - 1.0, ' ', o);
   }
 }
