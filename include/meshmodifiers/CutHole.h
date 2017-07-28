@@ -28,6 +28,9 @@ protected:
   const Point _center;
   RealVectorValue _r;
   const unsigned int _refinement_steps;
+
+  std::set<const Elem *> _delete_elems;
+  std::set<const Node *> _touched_nodes;
 };
 
 #endif // CUTHOLE_H

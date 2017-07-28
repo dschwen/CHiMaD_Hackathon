@@ -30,7 +30,7 @@
   [../]
   [./improve]
     type = ImproveElements
-    iterations = 4
+    iterations = 1
     depends_on = hole
   [../]
 []
@@ -126,14 +126,14 @@
     type = LineValueSampler
     variable = 'p vel_x vel_y'
     start_point = '7 0 0'
-    end_point = '7 0.999 0'
+    end_point = '7 1 0'
     num_points = '20'
     sort_by = y
   [../]
   [./x7b]
     type = LineValueSampler
     variable = 'p vel_x vel_y'
-    start_point = '7 4.001 0'
+    start_point = '7 4 0'
     end_point = '7 6 0'
     num_points = '40'
     sort_by = y
