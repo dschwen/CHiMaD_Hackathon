@@ -39,6 +39,7 @@ void
 SnapToGeometry::meshChanged()
 {
   auto & mesh = _mesh.getMesh();
+  _mesh.buildNodeList();
 
   for (auto & boundary_id : _boundary_ids)
   {
@@ -48,12 +49,13 @@ SnapToGeometry::meshChanged()
       auto & node = mesh.node_ref(node_id);
 
       const Point center(7, 2.5, 0);
-      const Point r(1.5, 1, 1);
+      const Point r(1, 1.5, 1);
 
       const Point o = node - center;
       const Real R =
           o(0) * o(0) / (r(0) * r(0)) + o(1) * o(1) / (r(1) * r(1)) + o(2) * o(2) / (r(2) * r(2));
-      node = o * 1.0 / R + center;
+
+      node = o * 1.0 / std::sqrt(R) + center;
     }
   }
 }
