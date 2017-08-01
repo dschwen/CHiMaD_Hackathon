@@ -169,6 +169,7 @@
     variable = c
     sort_by = x
     num_points = 161
+    execute_on = 'initial timestep_end'
   [../]
 []
 
@@ -183,6 +184,10 @@
   [../]
   [./dt]
     type = TimestepSize
+  [../]
+  [./memory]
+    type = MemoryUsage
+    mem_type =  physical_memory
   [../]
 []
 
