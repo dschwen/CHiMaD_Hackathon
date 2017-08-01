@@ -23,6 +23,7 @@ include $(FRAMEWORK_DIR)/moose.mk
 TENSOR_MECHANICS := yes
 PHASE_FIELD      := yes
 NAVIER_STOKES    := yes
+XFEM			    	 := yes
 include $(MOOSE_DIR)/modules/modules.mk
 ###############################################################################
 

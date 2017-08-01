@@ -13,6 +13,7 @@
 #include "OstRipICAction.h"
 #include "OstRipPseudoRand.h"
 #include "SphereSurfaceMesh.h"
+#include "SnapToGeometry.h"
 
 template <>
 InputParameters
@@ -22,8 +23,7 @@ validParams<ChimadHackathonApp>()
   return params;
 }
 
-ChimadHackathonApp::ChimadHackathonApp(InputParameters parameters)
-  : MooseApp(parameters)
+ChimadHackathonApp::ChimadHackathonApp(InputParameters parameters) : MooseApp(parameters)
 {
   Moose::registerObjects(_factory);
   ModulesApp::registerObjects(_factory);
@@ -34,9 +34,7 @@ ChimadHackathonApp::ChimadHackathonApp(InputParameters parameters)
   ChimadHackathonApp::associateSyntax(_syntax, _action_factory);
 }
 
-ChimadHackathonApp::~ChimadHackathonApp()
-{
-}
+ChimadHackathonApp::~ChimadHackathonApp() {}
 
 // External entry point for dynamic application loading
 extern "C" void
@@ -65,6 +63,7 @@ ChimadHackathonApp::registerObjects(Factory & factory)
   registerMaterial(OstRipFreeEnergy);
   registerInitialCondition(OstRipPseudoRand);
   registerMesh(SphereSurfaceMesh);
+  registerUserObject(SnapToGeometry);
 }
 
 // External entry point for dynamic syntax association

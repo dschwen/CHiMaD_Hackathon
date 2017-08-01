@@ -9,10 +9,10 @@ REF=${BASE}_reference.e
 if [ ! -s $REF ]
 then
   cd mesh
-  gmsh -2 -setnumber scale 0.1 problem1b.geo
+  gmsh -2 -setnumber scale 0.05 problem1b.geo
   cd ..
 
-  # 846730 DOFs
+  # 3360312 DOFs
   mpirun -n 12 ../../CHiMaD_Hackathon-opt -i $BASE.i
   mv ${BASE}_out.e $REF
 fi

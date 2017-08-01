@@ -20,13 +20,13 @@ fi
 
 cat $BASE.i convergence.inc > ${BASE}_convergence.i
 rm ${BASE}_convergence.csv
-for ny in 160 120 80 60 40 20 10 8 
+for ny in 160 120 80 60 40 20 10 8
 do
   mpirun -n 4 ../../CHiMaD_Hackathon-opt -i ${BASE}_convergence.i Mesh/ny=$ny Mesh/nx=$(expr $ny \* 5) UserObjects/reference/mesh=$REF
 
   OUT=outputs/${BASE}_$ny
   mkdir -p $OUT
   mv ${BASE}_convergence_out* $OUT
-  
+
   grep '^1,' ${BASE}_convergence_out.csv | cut -d, -f2- >>${BASE}_convergence.csv
 done

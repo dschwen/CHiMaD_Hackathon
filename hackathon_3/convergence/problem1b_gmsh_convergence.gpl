@@ -170,6 +170,6 @@ set psdir
 set fit brief errorvariables nocovariancevariables errorscaling prescale nowrap v5
 GNUTERM = "qt"
 x = 0.0
-## Last datafile plotted: "problem1b_convergence.csv"
-pl 'problem1b_convergence.csv' u (sqrt($2)):3, x**-2*4.5, 'problem1b_convergence.csv' u (sqrt($2)):4, 'problem1b_convergence.csv' u (sqrt($2)):5, x**-3*10
+## Last datafile plotted: "problem1b_gmsh_convergence.csv"
+pl 'problem1b_gmsh_convergence.csv' u (sqrt($2)):3, x**-2*4.5, 'problem1b_gmsh_convergence.csv' u (sqrt($2)):4, 'problem1b_gmsh_convergence.csv' u (sqrt($2)):5, x**-3*10
 #    EOF

@@ -10,7 +10,7 @@
 #    	gnuplot home:     http://www.gnuplot.info
 #    	faq, bugs, etc:   type "help FAQ"
 #    	immediate help:   type "help"  (plot window: hit 'h')
-# set terminal qt nocrop enhanced size 640,480 font "arial,12.0" 
+# set terminal x11 
 # set output
 unset clip points
 set clip one
@@ -170,6 +170,6 @@ set psdir
 set fit brief errorvariables nocovariancevariables errorscaling prescale nowrap v5
 GNUTERM = "qt"
 x = 0.0
-## Last datafile plotted: "problem1b_convergence.csv"
-pl 'problem1b_moose_convergence.csv' u (sqrt($2)):3, x**-2*4.5, 'problem1b_moose_convergence.csv' u (sqrt($2)):4, 'problem1b_moose_convergence.csv' u (sqrt($2)):5, x**-3*10
+## Last datafile plotted: "problem1b_moose_convergence.csv"
+pl 'problem1b_moose_convergence.csv' u (sqrt($2)):3, x**-2*45, 'problem1b_moose_convergence.csv' u (sqrt($2)):4, 'problem1b_moose_convergence.csv' u (sqrt($2)):5, x**-3*200
 #    EOF
