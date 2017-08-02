@@ -13,7 +13,7 @@ then
   cd ..
 
   # 3360312 DOFs
-  mpirun -n 12 ../../CHiMaD_Hackathon-opt -i $BASE.i
+  mpirun -n 24 ../../CHiMaD_Hackathon-opt -i $BASE.i
   mv ${BASE}_out.e $REF
 fi
 

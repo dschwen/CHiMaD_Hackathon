@@ -141,6 +141,20 @@
   l_max_its = 1000
 []
 
+[Postprocessors]
+  [./nodes]
+    type = NumNodes
+  [../]
+  [./active_time]
+    type = PerformanceData
+    event = ACTIVE
+  [../]
+  [./mem]
+    type = MemoryUsage
+    mem_type = physical_memory
+  [../]
+[]
+
 [Outputs]
   exodus = true
   csv = true

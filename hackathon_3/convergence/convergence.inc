@@ -58,13 +58,6 @@
 []
 
 [Postprocessors]
-  [./nodes]
-    type = NumNodes
-  [../]
-  [./active_time]
-    type = PerformanceData
-    event = ACTIVE
-  [../]
   [./p_err]
     type = ElementL2Error
     function = p_reference
