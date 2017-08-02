@@ -13,7 +13,7 @@
 #include "OstRipICAction.h"
 #include "OstRipPseudoRand.h"
 #include "SphereSurfaceMesh.h"
-#include "SnapToGeometry.h"
+#include "GeometryStokes.h"
 
 template <>
 InputParameters
@@ -63,7 +63,7 @@ ChimadHackathonApp::registerObjects(Factory & factory)
   registerMaterial(OstRipFreeEnergy);
   registerInitialCondition(OstRipPseudoRand);
   registerMesh(SphereSurfaceMesh);
-  registerUserObject(SnapToGeometry);
+  registerUserObject(GeometryStokes);
 }
 
 // External entry point for dynamic syntax association

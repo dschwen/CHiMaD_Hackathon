@@ -1,10 +1,10 @@
-#include "SnapToGeometry.h"
+#include "GeometryBase.h"
 #include "MooseMesh.h"
 #include "libmesh/mesh_base.h"
 
 template <>
 InputParameters
-validParams<SnapToGeometry>()
+validParams<GeometryBase>()
 {
   InputParameters params = validParams<GeneralUserObject>();
   params.addClassDescription("Snap refined nodes on a given boundary to a given geometry");
@@ -13,7 +13,7 @@ validParams<SnapToGeometry>()
   return params;
 }
 
-SnapToGeometry::SnapToGeometry(const InputParameters & parameters)
+GeometryBase::GeometryBase(const InputParameters & parameters)
   : GeneralUserObject(parameters),
     _mesh(_subproblem.mesh()),
     _boundary_ids(_mesh.getBoundaryIDs(getParam<std::vector<BoundaryName>>("boundary")))
@@ -21,25 +21,24 @@ SnapToGeometry::SnapToGeometry(const InputParameters & parameters)
 }
 
 void
-SnapToGeometry::initialize()
+GeometryBase::initialize()
 {
 }
 
 void
-SnapToGeometry::execute()
+GeometryBase::execute()
 {
 }
 
 void
-SnapToGeometry::finalize()
+GeometryBase::finalize()
 {
 }
 
 void
-SnapToGeometry::meshChanged()
+GeometryBase::meshChanged()
 {
   auto & mesh = _mesh.getMesh();
-  _mesh.buildNodeList();
 
   for (auto & boundary_id : _boundary_ids)
   {
@@ -48,14 +47,7 @@ SnapToGeometry::meshChanged()
     {
       auto & node = mesh.node_ref(node_id);
 
-      const Point center(7, 2.5, 0);
-      const Point r(1, 1.5, 1);
-
-      const Point o = node - center;
-      const Real R =
-          o(0) * o(0) / (r(0) * r(0)) + o(1) * o(1) / (r(1) * r(1)) + o(2) * o(2) / (r(2) * r(2));
-
-      node = o * 1.0 / std::sqrt(R) + center;
+      snapNode(node);
     }
   }
 }
