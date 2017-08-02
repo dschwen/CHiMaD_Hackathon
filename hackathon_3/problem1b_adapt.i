@@ -1,13 +1,17 @@
+#[Mesh]
+#  type = GeneratedMesh
+#  dim = 2
+#  nx = 45
+#  ny = 9
+#  xmin = 0
+#  xmax = 30
+#  ymin = 0
+#  ymax = 6
+#  elem_type = TRI6
+#[]
 [Mesh]
-  type = GeneratedMesh
-  dim = 2
-  nx = 1
-  ny = 1
-  xmin = 0
-  xmax = 30
-  ymin = 0
-  ymax = 6
-  elem_type = QUAD9
+  type = FileMesh
+  file = mesh/problem1b.msh
 []
 
 [GlobalParams]
@@ -22,6 +26,17 @@
     new_boundary = top_right
     coord = '30 6'
   [../]
+  #[./hole]
+  #  type = CutHole
+  #  center = '7 2.5 0'
+  #  r = '1 1.5 1'
+  #  new_boundary = obstruction
+  #[../]
+  #[./improve]
+  #  type = ImproveElements
+  #  iterations = 1
+  #  depends_on = hole
+  #[../]
 []
 
 [Variables]
@@ -36,21 +51,6 @@
   [./p]
     order = FIRST
     family = LAGRANGE
-  [../]
-[]
-
-[AuxVariables]
-  [./p_diff]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./vel_x_diff]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./vel_y_diff]
-    order = CONSTANT
-    family = MONOMIAL
   [../]
 []
 
@@ -79,38 +79,17 @@
   [../]
 []
 
-[AuxKernels]
-  [./p_diff]
-    type = ElementL2ErrorFunctionAux
-    variable = p_diff
-    function = p_reference
-    coupled_variable = p
-  [../]
-  [./vel_x_diff]
-    type = ElementL2ErrorFunctionAux
-    variable = vel_x_diff
-    function = inlet_func
-    coupled_variable = vel_x
-  [../]
-  [./vel_y_diff]
-    type = ElementL2ErrorFunctionAux
-    variable = vel_y_diff
-    function = vel_y_reference
-    coupled_variable = vel_y
-  [../]
-[]
-
 [BCs]
   [./x_no_slip]
     type = DirichletBC
     variable = vel_x
-    boundary = 'top bottom'
+    boundary = 'obstruction top bottom'
     value = 0.0
   [../]
   [./y_no_slip]
     type = DirichletBC
     variable = vel_y
-    boundary = 'left top bottom'
+    boundary = 'obstruction left top bottom'
     value = 0.0
   [../]
   [./x_inlet]
@@ -133,7 +112,7 @@
 [Materials]
   [./const]
     type = GenericConstantMaterial
-    prop_names  = 'rho mu'
+    prop_names = 'rho mu'
     prop_values = '100  1'
   [../]
 []
@@ -147,12 +126,20 @@
 []
 
 [VectorPostprocessors]
-  [./x7]
+  [./x7a]
     type = LineValueSampler
     variable = 'p vel_x vel_y'
     start_point = '7 0 0'
+    end_point = '7 1 0'
+    num_points = '20'
+    sort_by = y
+  [../]
+  [./x7b]
+    type = LineValueSampler
+    variable = 'p vel_x vel_y'
+    start_point = '7 4 0'
     end_point = '7 6 0'
-    num_points = '100'
+    num_points = '40'
     sort_by = y
   [../]
   [./y5]
@@ -165,43 +152,15 @@
   [../]
 []
 
-[Postprocessors]
-  [./nodes]
-    type = NumNodes
+[Adaptivity]
+  [./Markers]
+    [./marker]
+      type = UniformMarker
+      mark = REFINE
+    [../]
   [../]
-  [./active_time]
-    type = PerformanceData
-    event = ACTIVE
-  [../]
-  [./p_err]
-    type = ElementL2Error
-    function = p_reference
-    variable = p
-  [../]
-  [./vel_x_err]
-    type = ElementL2Error
-    function = inlet_func
-    variable = vel_x
-  [../]
-  [./vel_y_err]
-    type = ElementL2Error
-    function = vel_y_reference
-    variable = vel_y
-  [../]
-[]
-
-[Postprocessors]
-  [./nodes]
-    type = NumNodes
-  [../]
-  [./active_time]
-    type = PerformanceData
-    event = ACTIVE
-  [../]
-  [./mem]
-    type = MemoryUsage
-    mem_type = physical_memory
-  [../]
+  steps = 6
+  marker = marker
 []
 
 [Executioner]
@@ -210,9 +169,10 @@
   petsc_options_value = '300                bjacobi  ilu          4'
   line_search = none
   nl_rel_tol = 1e-12
-  nl_max_its = 6
+  nl_abs_tol = 1e-12
+  nl_max_its = 15
   l_tol = 1e-6
-  l_max_its = 300
+  l_max_its = 1000
 []
 
 [Outputs]
@@ -221,17 +181,15 @@
   execute_on = TIMESTEP_END
 []
 
-[Functions]
-  [./p_reference]
-    type = ParsedFunction
-    value = '((1.0-x/30.0)*0.06+(1-y/6.0)*0.6)'
+[UserObjects]
+  [./snap]
+    type = GeometryStokes
+    boundary = obstruction
   [../]
-  [./vel_y_reference]
-    type = ParsedFunction
-    value = '0'
-  [../]
+[]
 
-  [./inlet_func] # also vel_x_reference
+[Functions]
+  [./inlet_func]
     type = ParsedFunction
     value = '-0.001 * (y-3)^2 + 0.009'
   [../]
