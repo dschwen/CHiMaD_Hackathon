@@ -14,6 +14,7 @@
 #include "OstRipPseudoRand.h"
 #include "SphereSurfaceMesh.h"
 #include "GeometryStokes.h"
+#include "GeometrySphere.h"
 
 template <>
 InputParameters
@@ -64,6 +65,7 @@ ChimadHackathonApp::registerObjects(Factory & factory)
   registerInitialCondition(OstRipPseudoRand);
   registerMesh(SphereSurfaceMesh);
   registerUserObject(GeometryStokes);
+  registerUserObject(GeometrySphere);
 }
 
 // External entry point for dynamic syntax association
