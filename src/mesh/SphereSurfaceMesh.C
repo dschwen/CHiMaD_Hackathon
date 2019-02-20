@@ -8,13 +8,16 @@
 #include "libmesh/sphere.h"
 #include "libmesh/unstructured_mesh.h"
 
+registerMooseObject("ChimadHackathonApp", SphereSurfaceMesh);
+
 template <>
 InputParameters
 validParams<SphereSurfaceMesh>()
 {
   InputParameters params = validParams<MooseMesh>();
   params.addParam<Real>("radius", 1.0, "Sphere radius");
-  params.addParam<unsigned int>("depth", 3, "Iteration steps in the triangle bisection construction");
+  params.addParam<unsigned int>(
+      "depth", 3, "Iteration steps in the triangle bisection construction");
   return params;
 }
 
@@ -27,10 +30,10 @@ SphereSurfaceMesh::SphereSurfaceMesh(const InputParameters & parameters)
 {
 }
 
-MooseMesh &
-SphereSurfaceMesh::clone() const
+std::unique_ptr<MooseMesh>
+SphereSurfaceMesh::safeClone() const
 {
-  return *(new SphereSurfaceMesh(*this));
+  return libmesh_make_unique<SphereSurfaceMesh>(*this);
 }
 
 void
@@ -48,14 +51,26 @@ SphereSurfaceMesh::buildMesh()
   const Real phi = (1.0 + std::sqrt(5.0)) / 2.0;
   const Real X = std::sqrt(1.0 / (phi * phi + 1.0));
   const Real Z = X * phi;
-  const Point vdata[12] = {
-      {-X, 0.0, Z}, {X, 0.0, Z}, {-X, 0.0, -Z}, {X, 0.0, -Z}, {0.0, Z, X}, {0.0, Z, -X}, {0.0, -Z, X}, {0.0, -Z, -X}, {Z, X, 0.0}, {-Z, X, 0.0}, {Z, -X, 0.0}, {-Z, -X, 0.0}};
+  const Point vdata[12] = {{-X, 0.0, Z},
+                           {X, 0.0, Z},
+                           {-X, 0.0, -Z},
+                           {X, 0.0, -Z},
+                           {0.0, Z, X},
+                           {0.0, Z, -X},
+                           {0.0, -Z, X},
+                           {0.0, -Z, -X},
+                           {Z, X, 0.0},
+                           {-Z, X, 0.0},
+                           {Z, -X, 0.0},
+                           {-Z, -X, 0.0}};
   for (unsigned int i = 0; i < 12; ++i)
     _umesh.add_point(vdata[i] * _radius, i);
 
   // icosahedron faces
-  const unsigned int tindices[20][3] = {
-      {0, 4, 1}, {0, 9, 4}, {9, 5, 4}, {4, 5, 8}, {4, 8, 1}, {8, 10, 1}, {8, 3, 10}, {5, 3, 8}, {5, 2, 3}, {2, 7, 3}, {7, 10, 3}, {7, 6, 10}, {7, 11, 6}, {11, 0, 6}, {0, 1, 6}, {6, 1, 10}, {9, 0, 11}, {9, 11, 2}, {9, 2, 5}, {7, 2, 11}};
+  const unsigned int tindices[20][3] = {{0, 4, 1},  {0, 9, 4},  {9, 5, 4},  {4, 5, 8},  {4, 8, 1},
+                                        {8, 10, 1}, {8, 3, 10}, {5, 3, 8},  {5, 2, 3},  {2, 7, 3},
+                                        {7, 10, 3}, {7, 6, 10}, {7, 11, 6}, {11, 0, 6}, {0, 1, 6},
+                                        {6, 1, 10}, {9, 0, 11}, {9, 11, 2}, {9, 2, 5},  {7, 2, 11}};
   for (unsigned int i = 0; i < 20; ++i)
   {
     Elem * elem = _umesh.add_elem(new Tri3);

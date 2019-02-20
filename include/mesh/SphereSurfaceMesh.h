@@ -20,7 +20,7 @@ public:
 
   // No copy
   SphereSurfaceMesh & operator=(const SphereSurfaceMesh & other_mesh) = delete;
-  virtual MooseMesh & clone() const override;
+  virtual std::unique_ptr<MooseMesh> safeClone() const override;
 
   virtual void buildMesh() override;
 
@@ -43,7 +43,8 @@ protected:
   /// underlying unstructured mesh to build the sphere in
   UnstructuredMesh & _umesh;
 
-  // midpoints are shared between adjacent parent triangles, this map helps avoid adding duplicate nodes
+  // midpoints are shared between adjacent parent triangles, this map helps avoid adding duplicate
+  // nodes
   std::map<std::pair<unsigned int, unsigned int>, unsigned int> _midpoint;
 };
 

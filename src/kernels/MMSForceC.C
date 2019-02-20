@@ -1,16 +1,16 @@
 #include "MMSForceC.h"
 
-template<>
-InputParameters validParams<MMSForceC>()
+registerMooseObject("ChimadHackathonApp", MMSForceC);
+
+template <>
+InputParameters
+validParams<MMSForceC>()
 {
   InputParameters params = MMSBase<Kernel>::validParams();
   return params;
 }
 
-MMSForceC::MMSForceC(const InputParameters & parameters) :
-    MMSBase<Kernel>(parameters)
-{
-}
+MMSForceC::MMSForceC(const InputParameters & parameters) : MMSBase<Kernel>(parameters) {}
 
 Real
 MMSForceC::computeQpResidual()

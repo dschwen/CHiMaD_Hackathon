@@ -1,5 +1,7 @@
 #include "GeometryStokes.h"
 
+registerMooseObject("ChimadHackathonApp", GeometryStokes);
+
 template <>
 InputParameters
 validParams<GeometryStokes>()

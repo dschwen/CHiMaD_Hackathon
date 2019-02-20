@@ -3,8 +3,12 @@
 
 #include "libmesh/mesh_modification.h"
 #include "libmesh/mesh_refinement.h"
+#include "libmesh/elem.h"
+#include "libmesh/node.h"
 #include "libmesh/sphere.h"
 #include "libmesh/unstructured_mesh.h"
+
+registerMooseObject("ChimadHackathonApp", CutHole);
 
 template <>
 InputParameters
@@ -14,7 +18,8 @@ validParams<CutHole>()
   params.addClassDescription("Cut an ellipsoidal hole in a generated mesh");
   params.addRequiredParam<Point>("center", "center of the hole");
   params.addRequiredParam<RealVectorValue>("r", "semimajor axis of the hole");
-  params.addParam<unsigned int>("refine", 0, "Refinement steps for elements cut be the surface of the hole");
+  params.addParam<unsigned int>(
+      "refine", 0, "Refinement steps for elements cut be the surface of the hole");
   return params;
 }
 

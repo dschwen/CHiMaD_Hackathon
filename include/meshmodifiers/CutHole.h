@@ -2,8 +2,14 @@
 #define CUTHOLE_H
 
 #include "ElementDeleterBase.h"
+#include "libmesh/point.h"
 
 class CutHole;
+namespace libmesh
+{
+class Elem;
+class Node;
+} // namespace libmesh
 
 template <>
 InputParameters validParams<CutHole>();
