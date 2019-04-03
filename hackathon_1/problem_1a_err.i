@@ -1,8 +1,8 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 200
-  ny = 200
+  nx = ${L}
+  ny = ${L}
   xmax = 200
   ymax = 200
 []
@@ -41,6 +41,10 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./c_diff]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
 []
 
 [Kernels]
@@ -72,6 +76,14 @@
   [../]
 []
 
+[Functions]
+  [./reference]
+    type = SolutionFunction
+    solution = reference
+    from_variable = c
+  [../]
+[]
+
 [AuxKernels]
   [./free_en]
     type = TotalFreeEnergy
@@ -80,6 +92,12 @@
     kappa_names = kappa
     interfacial_vars = c
     execute_on = 'initial timestep_end'
+  [../]
+  [./c_diff]
+    type = ElementL2ErrorFunctionAux
+    variable = c_diff
+    function = reference
+    coupled_variable = c
   [../]
 []
 
@@ -116,11 +134,28 @@
   [./nodes]
     type = NumNodes
   [../]
+  [./active_time]
+    type = RunTime
+    time_type = active
+  [../]
+  [./err]
+    type = ElementL2Error
+    function = reference
+    variable = c
+  [../]
   [./memory]
     type = MemoryUsage
     mem_type = physical_memory
     report_peak_value = true
     execute_on = 'LINEAR NONLINEAR TIMESTEP_END'
+  [../]
+[]
+
+[UserObjects]
+  [./reference]
+    type = SolutionUserObject
+    mesh = ../problem_1a_reference.e
+    system_variables = 'c'
   [../]
 []
 
@@ -157,7 +192,7 @@
     dt = 1.0
     cutback_factor = .75
     growth_factor = 1.25
-    optimal_iterations = 10
+    optimal_iterations = 8
     iteration_window = 2
   [../]
 []
@@ -169,12 +204,15 @@
     sync_times = '1 5 10 20 100 200 500 1000 2000 3000 10000'
     sync_only = true
   [../]
-  [./log]
-     type = Console
-     output_file = true
-     execute_on = 'FINAL'
+  [./err]
+    type = CSV
+    sync_times = '1 5 10 20 100 200 500 1000 2000 3000 10000'
+    sync_only = true
+    show = err
   [../]
 
-  perf_graph = true
+  interval = 1
+  print_mesh_changed_info = true
+  print_perf_log = true
   print_linear_residuals = false
 []
